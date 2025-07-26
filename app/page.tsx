@@ -12,7 +12,7 @@ import { Paperclip } from "lucide-react";
 import { useMemo } from "react";
 
 export default function HomePage() {
-  // Stabilize the options object to prevent infinite re-renders
+  // (Required) You can change the options to fit your needs
   const sensorOptions = useMemo(
     () => ({
       sensors: [
@@ -37,34 +37,33 @@ export default function HomePage() {
     []
   );
 
-  // Use the multi-sensor liquid glass detector
+  // (Required) Use the multi-sensor liquid glass detector
   const { sensors, getSensorById } = useLiquidGlassMultiSensor(sensorOptions);
+  const { hideBottomBlur, fallbackGlass } = useLiquidGlassSupport();
 
-  // Get specific sensors
+  // (Sample) Get specific sensors
   const topNavSensor = getSensorById("top-nav");
   const bottomNavSensor = getSensorById("bottom-nav");
   const centerElementSensor = getSensorById("center-element");
 
-  const { hideBottomBlur, fallbackGlass } = useLiquidGlassSupport();
-
   return (
     <>
-      {/* Liquid Glass Filters Place it ONE time in the project at the main content */}
+      {/* (Required) Liquid Glass Filters Place it ONE time in the project at the main content */}
       <LiquidGlassFilters />
 
-      {/* Render all sensor components */}
+      {/* (Required)Render all sensor components */}
       {sensors.map((sensor) => (
         <sensor.SensorComponent key={sensor.id} />
       ))}
 
-      {/* Liquid Glass Top Navigation Bar */}
+      {/* (Sample) Liquid Glass Top Navigation Bar */}
       <TopNavigationBar isDark={topNavSensor?.isDark ?? false} />
 
-      {/* Simple liquid glass element - positioned in center */}
+      {/* (Sample) Simple liquid glass element - positioned in center */}
       <div className='fixed z-50 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 liquid-glass-wrapper rounded-2xl'>
         <div className='liquid-glass-background rounded-2xl'></div>
 
-        <div className={`liquid-glass-content ${fallbackGlass ? "backdrop-blur-3xl" : ""} ${centerElementSensor?.isDark ? "dark" : ""} px-10 py-2 rounded-2xl`}>
+        <div className={`liquid-glass-content ${fallbackGlass ? "backdrop-blur-lg" : ""} ${centerElementSensor?.isDark ? "dark" : ""} px-10 py-2 rounded-2xl`}>
           <div className='flex items-center gap-2'>
             <Paperclip className='w-4 h-4 transition-colors duration-200' />
             <span className='text-2xl transition-colors duration-200'>Demo Liquid Glass</span>
@@ -72,14 +71,16 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* Demo */}
+      {/* (Sample) Demo */}
       <Demo />
 
-      {/* Liquid Glass Bottom Navigation Bar */}
+      {/* (Sample) Liquid Glass Bottom Navigation Bar */}
       <BottomNavbar isDark={bottomNavSensor?.isDark ?? false} />
 
-      {/* Hide The Bottom Blur for iOS 26 or Above and if its Safari because its handled by the browser */}
+      {/* (Sample) Hide The Bottom Blur for iOS 26 or Above and if its Safari because its handled by the browser */}
       {!hideBottomBlur && <div className='gradient-blur-to-top' />}
+
+      {/* (Sample) Bottom Sheet */}
       <BottomSheet />
     </>
   );

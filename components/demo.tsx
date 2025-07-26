@@ -1,6 +1,6 @@
 "use client";
 
-import { Book, Camera, Coffee, Eye, Heart, Music, Star, Zap } from "lucide-react";
+import { Book, Camera, Coffee, Eye, Github, Heart, Music, Star, Zap } from "lucide-react";
 import Image from "next/image";
 
 export default function Demo() {
@@ -136,6 +136,32 @@ export default function Demo() {
           <p className='text-gray-600 text-lg'>Neutral gradient background for testing</p>
         </div>
       </section>
+
+      {/* Section 11: Dark Gradient */}
+      <section className='min-h-[400px] bg-gradient-to-br from-gray-800 via-gray-900 to-gray-950 rounded-3xl p-8 flex items-center justify-center'>
+        <div className='text-center'>
+          <h2 className='text-4xl font-bold text-gray-100 mb-4'>Dark Gradient</h2>
+          <p className='text-gray-300 text-lg'>Testing with dark gradient</p>
+        </div>
+      </section>
+
+      {/* Section 12: Light Gradient */}
+      <section className='min-h-[400px] bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 rounded-3xl p-8 flex items-center justify-center'>
+        <div className='text-center'>
+          <h2 className='text-4xl font-bold text-gray-800 mb-4'>Light Gradient</h2>
+          <p className='text-gray-600 text-lg'>Testing with light gradient</p>
+        </div>
+      </section>
+
+      {/* Footer and Github link to Repo */}
+      <div className='flex items-center justify-center mt-10'>
+        <p className='text-muted-foreground text-sm'>Code created by: Ahmad Alanazi </p>
+        <p className='text-muted-foreground text-sm'>Github: </p>
+        <a href='https://github.com/ahmadaIanazi/liquid-glass' target='_blank' rel='noopener noreferrer' className='text-muted-foreground hover:text-gray-900'>
+          <Github className='w-6 h-6' />
+        </a>
+      </div>
+      <div className='h-96' />
     </div>
   );
 }
