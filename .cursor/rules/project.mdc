@@ -1,0 +1,334 @@
+---
+description: Project Overview
+globs:
+alwaysApply: false
+---
+
+# LinkBuilder Project Documentation
+
+## Project Overview
+
+**LinkBuilder** is a Next.js-based drag-and-drop link page builder that allows users to create mobile-first link pages (similar to Linktree) with a visual editor. The app consists of two main parts: an **Editor** for building pages and a **Demo/Public** page for viewing the final result.
+
+## Architecture & Technology Stack
+
+### Core Technologies
+
+- **Framework**: Next.js 14 with App Router
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS with custom design system
+- **State Management**: Zustand for global state
+- **UI Components**: Radix UI primitives with custom styling
+- **Drag & Drop**: @dnd-kit for block reordering
+- **Forms**: React Hook Form with Zod validation
+- **Icons**: Lucide React
+- **Package Manager**: pnpm
+
+### Project Structure
+
+```
+seeallinfo/
+├── app/                    # Next.js App Router pages
+│   ├── demo/              # Public view page (will become [username])
+│   ├── editor/            # Visual editor interface
+│   ├── globals.css        # Global styles and dark mode
+│   ├── layout.tsx         # Root layout
+│   └── page.tsx           # Landing page
+├── components/            # React components
+│   ├── blocks/           # Individual block components
+│   ├── ui/               # Shadcn/ui base components
+│   └── [core components] # Editor-specific components
+├── hooks/                # Custom React hooks
+├── lib/                  # Core utilities and types
+└── public/               # Static assets
+```
+
+## Core Concepts
+
+### 1. Block System
+
+The app uses a modular block system where each content element is a "block" with:
+
+- **Type**: Defines the block's functionality (title, link, image, etc.)
+- **Props**: Configuration data for the block
+- **ID**: Unique identifier for state management
+
+**Available Block Types:**
+
+- `title` - Text headings with styling
+- `avatar` - Profile images
+- `link` - Clickable buttons with URLs
+- `category` - Colored category badges
+- `social` - Social media platform links
+- `image` - Image galleries with multiple layouts
+- `form` - Contact forms with custom fields
+- `product` - Menu items with prices
+- `menu-header` - Restaurant headers
+- `menu-category` - Menu section dividers
+- `special-offer` - Promotional content
+- `hours` - Opening hours display
+- `section` - Visual dividers
+- `horizontal-categories` - Auto-generated navigation
+
+### 2. State Management (Zustand Store)
+
+The `useEditorStore` manages all editor state:
+
+**State Properties:**
+
+- `blocks[]` - Array of all blocks
+- `globalSettings` - Page-wide settings (theme, colors, layout)
+- `activeBlock` - Currently selected block
+- `editingMode` - Current editing context (styling/content/settings)
+- `history[]` - Undo/redo functionality
+- `mobileActiveBlock` - Mobile-specific block selection
+
+**Key Actions:**
+
+- `addBlock()` - Create new blocks
+- `updateBlock()` - Modify block properties
+- `moveBlock()` - Reorder blocks
+- `deleteBlock()` - Remove blocks
+- `saveBlocks()` - Persist to localStorage
+- `loadBlocks()` - Load from localStorage
+
+### 3. Editing Modes
+
+The editor supports three editing contexts:
+
+- **Styling**: Visual appearance (colors, fonts, spacing)
+- **Content**: Text content and URLs
+- **Settings**: Block-specific configuration
+
+## Page Structure
+
+### 1. Editor Page (`/editor`)
+
+**Purpose**: Visual drag-and-drop interface for building link pages
+
+**Key Features:**
+
+- **Drag & Drop**: Reorder blocks using @dnd-kit
+- **Snap Scrolling**: Mobile-optimized block navigation
+- **Real-time Editing**: Click-to-edit text content
+- **Bottom Sheets**: Mobile-first editing interface
+- **Global Settings**: Page-wide customization
+- **Undo/Redo**: History management
+- **Auto-save**: LocalStorage persistence
+
+**Components:**
+
+- `ActionBar` - Top toolbar with save/preview/undo
+- `SortableBlock` - Draggable block wrapper
+- `BlockRenderer` - Renders appropriate block component
+- `BottomSheet` - Mobile editing interface
+- `DynamicFloatingButton` - Context-aware action button
+- `GlobalSettings` - Page configuration modal
+
+### 2. Demo Page (`/demo`) - Future: `/[username]`
+
+**Purpose**: Public view of the built link page
+
+**Key Features:**
+
+- **Responsive Design**: Mobile-first layout
+- **Theme Support**: Light/dark mode with custom colors
+- **Block Rendering**: Displays all blocks without editing UI
+- **Form Handling**: Functional contact forms
+- **LocalStorage Loading**: Loads saved page data
+
+**Future Implementation:**
+
+- Dynamic routing based on username
+- Database integration for user pages
+- Authentication system
+- Analytics and tracking
+
+## Block System Architecture
+
+### Block Component Pattern
+
+Each block follows a consistent pattern:
+
+```typescript
+interface BlockProps {
+  block: Block;
+  isEditing?: boolean;
+}
+
+export function BlockName({ block, isEditing }: BlockProps) {
+  // 1. Extract props from block
+  const { text, fontSize, alignment } = block.props;
+
+  // 2. Handle editing interactions
+  const handleFocus = () => {
+    /* editing logic */
+  };
+
+  // 3. Render with conditional editing UI
+  return <div className='block-container'>{isEditing ? <EditableContent /> : <StaticContent />}</div>;
+}
+```
+
+### Block Rendering System
+
+The `BlockRenderer` component acts as a switchboard:
+
+```typescript
+export function BlockRenderer({ block, isEditing }: BlockRendererProps) {
+  switch (block.type) {
+    case "title":
+      return <TitleBlock block={block} isEditing={isEditing} />;
+    case "link":
+      return <LinkBlock block={block} isEditing={isEditing} />;
+    // ... other cases
+  }
+}
+```
+
+## Mobile-First Features
+
+### 1. Snap Scrolling
+
+- **Purpose**: Touch-optimized block navigation
+- **Implementation**: `useSnapScrolling` hook
+- **Behavior**: Scroll up/down to navigate between blocks
+- **Visual Feedback**: Haptic feedback and scroll indicators
+
+### 2. Bottom Sheet Interface
+
+- **Purpose**: Mobile-friendly editing interface
+- **Components**:
+  - `BottomSheetStyling` - Visual customization
+  - `BottomSheetContent` - Text editing
+  - `BottomSheetSettings` - Block configuration
+
+### 3. Touch Interactions
+
+- **Tap to Edit**: Direct text editing on blocks
+- **Long Press**: Context menus for block actions
+- **Drag & Drop**: Touch-optimized block reordering
+
+## Styling System
+
+### 1. Theme Support
+
+- **Light/Dark Mode**: System preference detection
+- **Custom Colors**: User-defined color schemes
+- **CSS Variables**: Dynamic theme switching
+
+### 2. Global Settings
+
+```typescript
+interface GlobalSettings {
+  pageTitle: string;
+  fontFamily: string;
+  primaryColor: string;
+  backgroundColor: string;
+  borderRadius: number;
+  padding: number;
+  maxWidth: number;
+  theme: "light" | "dark" | "system";
+}
+```
+
+### 3. Block Styling
+
+Each block supports:
+
+- **Typography**: Font size, weight, alignment
+- **Colors**: Background, text, border colors
+- **Spacing**: Padding, margins, gaps
+- **Layout**: Width, height, positioning
+
+## Data Flow
+
+### 1. Editor Flow
+
+1. User interacts with editor
+2. Zustand store updates state
+3. Components re-render with new data
+4. Changes auto-save to localStorage
+5. History stack updates for undo/redo
+
+### 2. Public Page Flow
+
+1. Page loads and reads from localStorage
+2. Global settings applied to page
+3. Blocks rendered in order
+4. Theme applied based on settings
+5. Interactive elements (forms, links) become functional
+
+## Development Guidelines
+
+### 1. Adding New Blocks
+
+1. Define block type in `lib/types.ts`
+2. Create block component in `components/blocks/`
+3. Add to `BlockRenderer` switch statement
+4. Update `createDefaultBlock` in store
+5. Add to `AddBlockButton` options
+
+### 2. Block Component Structure
+
+```typescript
+// 1. Interface definition
+interface BlockNameProps {
+  block: Block;
+  isEditing?: boolean;
+}
+
+// 2. Component with editing support
+export function BlockName({ block, isEditing }: BlockNameProps) {
+  // 3. Extract and validate props
+  const { text, fontSize } = block.props;
+
+  // 4. Handle editing interactions
+  const handleFocus = () => {
+    /* editing logic */
+  };
+
+  // 5. Render with conditional editing UI
+  return <div className='block-container'>{/* Content */}</div>;
+}
+```
+
+### 3. State Management Rules
+
+- Use Zustand store for global state
+- Keep block-specific state local when possible
+- Always update through store actions
+- Maintain history for undo/redo
+- Auto-save to localStorage
+
+### 4. Mobile-First Development
+
+- Test on mobile devices first
+- Use touch-friendly interactions
+- Implement snap scrolling for navigation
+- Design for bottom sheet editing
+- Ensure proper touch targets (44px minimum)
+
+## Future Considerations
+
+### 1. Authentication & User Management
+
+- User registration and login
+- Username-based routing (`/[username]`)
+- User-specific page storage
+- Account management interface
+
+### 2. Database Integration
+
+- Replace localStorage with database
+- User data persistence
+- Page analytics and tracking
+- Multi-user support
+
+### 3. Advanced Features
+
+- Template system
+- Custom CSS injection
+- SEO optimization
+- Social media previews
+- Analytics dashboard

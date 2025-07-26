@@ -1,0 +1,245 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Dark mode styles for demo page components */
+.dark-theme {
+  /* Card and container backgrounds */
+  .bg-white {
+    background-color: #1e293b !important;
+    color: #f8fafc !important;
+  }
+
+  .bg-gray-50 {
+    background-color: #334155 !important;
+  }
+
+  .bg-gray-100 {
+    background-color: #475569 !important;
+  }
+
+  .bg-gray-200 {
+    background-color: #64748b !important;
+  }
+
+  /* Text colors */
+  .text-gray-900 {
+    color: #f8fafc !important;
+  }
+
+  .text-gray-800 {
+    color: #f1f5f9 !important;
+  }
+
+  .text-gray-700 {
+    color: #e2e8f0 !important;
+  }
+
+  .text-gray-600 {
+    color: #cbd5e1 !important;
+  }
+
+  .text-gray-500 {
+    color: #94a3b8 !important;
+  }
+
+  .text-gray-400 {
+    color: #64748b !important;
+  }
+
+  /* Borders */
+  .border-gray-200 {
+    border-color: #475569 !important;
+  }
+
+  .border-gray-300 {
+    border-color: #64748b !important;
+  }
+
+  /* Form elements */
+  input,
+  textarea,
+  select {
+    background-color: #334155 !important;
+    border-color: #475569 !important;
+    color: #f8fafc !important;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: #94a3b8 !important;
+  }
+
+  /* Buttons */
+  button {
+    transition: all 0.3s ease;
+  }
+
+  /* Hover states */
+  .hover\:bg-gray-50:hover {
+    background-color: #475569 !important;
+  }
+
+  .hover\:bg-gray-100:hover {
+    background-color: #64748b !important;
+  }
+
+  .hover\:bg-gray-200:hover {
+    background-color: #94a3b8 !important;
+  }
+
+  /* Special backgrounds for specific components */
+  .bg-blue-50 {
+    background-color: #1e3a8a !important;
+  }
+
+  .bg-green-50 {
+    background-color: #14532d !important;
+  }
+
+  .bg-red-50 {
+    background-color: #7f1d1d !important;
+  }
+
+  .bg-yellow-50 {
+    background-color: #78350f !important;
+  }
+
+  /* Border colors for special states */
+  .border-blue-200 {
+    border-color: #3b82f6 !important;
+  }
+
+  .border-green-200 {
+    border-color: #10b981 !important;
+  }
+
+  .border-red-200 {
+    border-color: #ef4444 !important;
+  }
+
+  /* Text colors for special states */
+  .text-blue-900 {
+    color: #dbeafe !important;
+  }
+
+  .text-blue-600 {
+    color: #60a5fa !important;
+  }
+
+  .text-green-600 {
+    color: #34d399 !important;
+  }
+
+  .text-red-600 {
+    color: #f87171 !important;
+  }
+
+  .text-red-500 {
+    color: #ef4444 !important;
+  }
+}
+
+/* Mobile-first touch optimizations */
+@layer utilities {
+  .touch-manipulation {
+    touch-action: manipulation;
+  }
+
+  /* Smooth scrolling for mobile */
+  html {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Prevent zoom on input focus */
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+
+  /* Custom scrollbar for webkit browsers */
+  ::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 2px;
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  /* Hide scrollbar for horizontal scroll */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
