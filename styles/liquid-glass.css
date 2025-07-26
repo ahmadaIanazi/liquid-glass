@@ -1,0 +1,129 @@
+/* Liquid Glass Effect CSS Classes */
+
+/* 1. The main positional wrapper. */
+.liquid-glass-wrapper {
+  position: relative;
+  width: fit-content;
+  transition: all 400ms cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* 2. The background layer with the distortion effect.
+   This sits BEHIND the content. */
+.liquid-glass-background {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit; /* Inherits rounding from the content div */
+  backdrop-filter: blur(4px) saturate(150%);
+  -webkit-backdrop-filter: blur(4px) saturate(150%);
+  /* The distortion filter ONLY applies to this layer. */
+  filter: url(#liquid-glass-filters);
+  -webkit-filter: url(#liquid-glass-filters);
+  pointer-events: none; /* Allows clicks to pass through to the content */
+}
+
+/* Fallback for browsers that don't support backdrop-filter */
+.liquid-glass-background-fallback {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit; /* Inherits rounding from the content div */
+  backdrop-filter: blur(16px) saturate(150%);
+  -webkit-backdrop-filter: blur(16px) saturate(150%);
+  pointer-events: none; /* Allows clicks to pass through to the content */
+}
+
+/* 3. The content container with the visual glass styles. */
+.liquid-glass-content {
+  position: relative;
+  z-index: 2;
+  border-radius: var(--radius, 1rem);
+  transition: all 400ms cubic-bezier(0.25, 1, 0.5, 1);
+  color: rgba(0, 0, 0, 0.9);
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.2);
+  box-shadow: inset -1px -1px 0 rgba(255, 255, 255, 0.9), inset 1px 1px 0 rgba(255, 255, 255, 0.9), 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: scale(1);
+  will-change: transform, box-shadow, background, border-color, color, border-width;
+}
+
+/* Glow Gradient Overlay (top-left + bottom-right) */
+.liquid-glass-content::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, transparent 40%, transparent 60%, rgba(255, 255, 255, 0.25) 100%);
+  opacity: 0.4;
+  z-index: 0;
+  transition: opacity 400ms ease;
+}
+
+/* Hover state */
+.liquid-glass-content:hover {
+  background: linear-gradient(45deg, rgba(255, 255, 255, 0.9) 0%, transparent 40%, transparent 60%, rgba(255, 255, 255, 0.9) 100%);
+  transform: scale(1.015);
+  box-shadow: inset 1px -1px 0 rgba(255, 255, 255, 0.9), inset -1px 1px 0 rgba(255, 255, 255, 0.9), 0 8px 18px rgba(0, 0, 0, 0.2);
+}
+
+.liquid-glass-content:hover::before {
+  opacity: 0.55;
+}
+
+/* Active state */
+.liquid-glass-content:active {
+  transition: all 100ms ease-out;
+  transform: scale(1.025);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.9) 40%, rgba(255, 255, 255, 0.9) 60%, rgba(255, 255, 255, 0.5) 100%);
+  box-shadow: inset -1px -1px 0 rgba(255, 255, 255, 1), inset 1px -1px 0 rgba(255, 255, 255, 1), inset -1px 1px 0 rgba(255, 255, 255, 1), inset 1px 1px 0 rgba(255, 255, 255, 1),
+    0 10px 28px rgba(0, 0, 0, 0.3);
+}
+
+.liquid-glass-content:active::before {
+  opacity: 0.75;
+}
+
+/* --- Dark Mode --- */
+.liquid-glass-content.dark,
+.dark .liquid-glass-content {
+  color: rgba(255, 255, 255, 1);
+  box-shadow: inset -1px -1px 0 rgba(255, 255, 255, 0.4), inset 1px 1px 0 rgba(255, 255, 255, 0.4), 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.liquid-glass-content.dark::before,
+.dark .liquid-glass-content::before {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, transparent 40%, transparent 60%, rgba(255, 255, 255, 0.15) 100%);
+  opacity: 0.25;
+}
+
+/* Dark mode hover state */
+.liquid-glass-content.dark:hover,
+.dark .liquid-glass-content:hover {
+  background: linear-gradient(45deg, rgba(255, 255, 255, 0.9) 0%, transparent 40%, transparent 60%, rgba(255, 255, 255, 0.9) 100%);
+  transform: scale(1.015);
+  box-shadow: inset 1px -1px 0 rgba(255, 255, 255, 0.25), inset -1px 1px 0 rgba(255, 255, 255, 0.25), 0 8px 18px rgba(0, 0, 0, 0.25);
+}
+
+.liquid-glass-content.dark:hover::before,
+.dark .liquid-glass-content:hover::before {
+  opacity: 0.4;
+}
+
+/* Dark mode active state */
+.liquid-glass-content.dark:active,
+.dark .liquid-glass-content:active {
+  background: linear-gradient(45deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.9) 40%, rgba(255, 255, 255, 0.9) 60%, rgba(255, 255, 255, 0.5) 100%);
+  transform: scale(1.025);
+  transition: all 100ms ease-out;
+  color: rgba(0, 0, 0, 0.9);
+  box-shadow: inset -1px -1px 0 rgba(255, 255, 255, 0.8), inset 1px -1px 0 rgba(255, 255, 255, 0.8), inset -1px 1px 0 rgba(255, 255, 255, 0.8),
+    inset 1px 1px 0 rgba(255, 255, 255, 0.8), 0 10px 28px rgba(0, 0, 0, 0.35);
+}
+
+.liquid-glass-content.dark:active::before,
+.dark .liquid-glass-content:active::before {
+  opacity: 0.6;
+}

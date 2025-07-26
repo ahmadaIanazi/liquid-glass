@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import Liquid Glass CSS classes */
+@import "../styles/liquid-glass.css";
+
 @layer base {
   :root {
     --background: 0 0% 100%;

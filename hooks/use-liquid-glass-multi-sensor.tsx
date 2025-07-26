@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import html2canvas from "html2canvas";
 
 interface SensorConfig {
@@ -22,6 +22,7 @@ interface LiquidGlassMultiSensorOptions {
   sensors: SensorConfig[];
   globalThreshold?: number;
   globalDebug?: boolean;
+  throttleInterval?: number; // Interval in milliseconds for throttling
 }
 
 interface SensorResult {
@@ -49,7 +50,16 @@ export function useLiquidGlassMultiSensor(options: LiquidGlassMultiSensorOptions
   const [sensorStates, setSensorStates] = useState<Record<string, { brightness: number; rect: DOMRect | null }>>({});
   const sensorRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
-  const { sensors, globalThreshold = 0.55, globalDebug = false } = options;
+  // Use refs to store stable references to avoid dependency issues
+  const optionsRef = useRef(options);
+  optionsRef.current = options;
+
+  // Add refs for scroll handling
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastScrollPositionRef = useRef({ x: 0, y: 0 });
+  const isScrollingRef = useRef(false);
+
+  const { sensors, globalThreshold = 0.55, globalDebug = false, throttleInterval = 50 } = options;
 
   // Initialize sensor states
   useEffect(() => {
@@ -63,6 +73,7 @@ export function useLiquidGlassMultiSensor(options: LiquidGlassMultiSensorOptions
   const analyzeSensor = useCallback(
     async (sensorId: string) => {
       const sensorRef = sensorRefs.current[sensorId];
+      const { sensors, globalThreshold, globalDebug } = optionsRef.current;
       const sensorConfig = sensors.find((s) => s.id === sensorId);
 
       if (!sensorRef || !sensorConfig || typeof window === "undefined") {
@@ -123,11 +134,13 @@ export function useLiquidGlassMultiSensor(options: LiquidGlassMultiSensorOptions
           }));
 
           if (sensorConfig?.debug || globalDebug) {
-            const threshold = sensorConfig.threshold ?? globalThreshold;
+            const threshold = sensorConfig.threshold ?? globalThreshold ?? 0.55;
             console.log(`📊 Sensor ${sensorId} Analysis complete:`, {
               avgBrightness: avgBrightness.toFixed(3),
               isDark: avgBrightness <= threshold,
               validSamples,
+              scrollPosition: { x: window.scrollX, y: window.scrollY },
+              isScrolling: isScrollingRef.current,
             });
           }
         } else {
@@ -145,73 +158,140 @@ export function useLiquidGlassMultiSensor(options: LiquidGlassMultiSensorOptions
         }));
       }
     },
-    [sensors, globalThreshold, globalDebug]
+    [] // No dependencies - using refs for stable access
   );
 
   const analyzeAllSensors = useCallback(async () => {
+    const { sensors } = optionsRef.current;
     await Promise.all(sensors.map((sensor) => analyzeSensor(sensor.id)));
-  }, [sensors, analyzeSensor]);
+  }, [analyzeSensor]);
 
+  // Store stable reference to analyzeAllSensors
+  const analyzeAllSensorsRef = useRef(analyzeAllSensors);
   useEffect(() => {
-    // Debounced handler for scroll and resize events
-    let debounceTimeout: NodeJS.Timeout | null = null;
+    analyzeAllSensorsRef.current = analyzeAllSensors;
+  }, [analyzeAllSensors]);
 
-    const debouncedAnalysis = () => {
-      if (debounceTimeout) clearTimeout(debounceTimeout);
-      debounceTimeout = setTimeout(() => {
-        requestAnimationFrame(analyzeAllSensors);
-      }, 100); // 100ms debounce delay
+  // Improved scroll handling with end detection
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollX = window.scrollX;
+      const currentScrollY = window.scrollY;
+
+      // Check if scroll position actually changed
+      const hasScrolled = currentScrollX !== lastScrollPositionRef.current.x || currentScrollY !== lastScrollPositionRef.current.y;
+
+      if (hasScrolled) {
+        isScrollingRef.current = true;
+        lastScrollPositionRef.current = { x: currentScrollX, y: currentScrollY };
+
+        // Clear existing timeout
+        if (scrollTimeoutRef.current) {
+          clearTimeout(scrollTimeoutRef.current);
+        }
+
+        // Set new timeout for scroll end detection
+        scrollTimeoutRef.current = setTimeout(() => {
+          isScrollingRef.current = false;
+
+          // Use requestIdleCallback for better performance, fallback to setTimeout
+          if ("requestIdleCallback" in window) {
+            (window as any).requestIdleCallback(
+              () => {
+                analyzeAllSensorsRef.current();
+              },
+              { timeout: 100 }
+            );
+          } else {
+            // Fallback for browsers that don't support requestIdleCallback
+            setTimeout(() => {
+              analyzeAllSensorsRef.current();
+            }, 16); // ~60fps
+          }
+        }, 150); // Wait 150ms after scroll stops
+      }
     };
 
-    // Initial analysis
-    const initialTimeout = setTimeout(analyzeAllSensors, 300);
+    const handleResize = () => {
+      // For resize, we can analyze immediately since it's not continuous
+      if ("requestIdleCallback" in window) {
+        (window as any).requestIdleCallback(
+          () => {
+            analyzeAllSensorsRef.current();
+          },
+          { timeout: 100 }
+        );
+      } else {
+        setTimeout(() => {
+          analyzeAllSensorsRef.current();
+        }, 16);
+      }
+    };
 
-    window.addEventListener("scroll", debouncedAnalysis, { passive: true });
-    window.addEventListener("resize", debouncedAnalysis, { passive: true });
+    // Initial analysis with delay to ensure DOM is ready
+    const initialTimeout = setTimeout(() => {
+      analyzeAllSensorsRef.current();
+    }, 500);
+
+    // Add event listeners
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleResize, { passive: true });
 
     return () => {
       clearTimeout(initialTimeout);
-      if (debounceTimeout) clearTimeout(debounceTimeout);
-      window.removeEventListener("scroll", debouncedAnalysis);
-      window.removeEventListener("resize", debouncedAnalysis);
+      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
     };
-  }, [analyzeAllSensors]);
+  }, []); // Empty dependency array - runs only once
 
-  // Create sensor results
-  const sensorResults: SensorResult[] = sensors.map((sensor) => {
-    const state = sensorStates[sensor.id] || { brightness: 0.5, rect: null };
-    const threshold = sensor.threshold ?? globalThreshold;
-    const isDark = state.brightness <= threshold;
+  // Create sensor results with useMemo to prevent unnecessary recreations
+  const sensorResults = useMemo((): SensorResult[] => {
+    return sensors.map((sensor: SensorConfig) => {
+      const state = sensorStates[sensor.id] || { brightness: 0.5, rect: null };
+      const threshold = sensor.threshold ?? globalThreshold;
+      const isDark = state.brightness <= threshold;
 
-    const SensorComponent: React.ComponentType<{ className?: string }> = ({ className = "" }) => (
-      <div
-        ref={(el) => {
-          sensorRefs.current[sensor.id] = el;
-        }}
-        className={`pointer-events-none ${className}`}
-        style={{
-          position: "fixed",
-          top: sensor.position.top,
-          bottom: sensor.position.bottom,
-          left: sensor.position.left,
-          right: sensor.position.right,
-          width: sensor.position.width || "100%",
-          height: sensor.position.height || "100px",
-          zIndex: -1,
-          borderRadius: "1rem",
-        }}
-      />
-    );
+      const SensorComponent: React.ComponentType<{ className?: string }> = ({ className = "" }) => (
+        <div
+          ref={(el) => {
+            sensorRefs.current[sensor.id] = el;
+          }}
+          className={`pointer-events-none ${className}`}
+          style={{
+            position: "fixed",
+            top: sensor.position.top,
+            bottom: sensor.position.bottom,
+            left: sensor.position.left,
+            right: sensor.position.right,
+            width: sensor.position.width || "100%",
+            height: sensor.position.height || "100px",
+            justifyContent: "center",
+            alignItems: "center",
+            display: "flex",
+            fontSize: "12px",
+            color: "red",
+            zIndex: sensor.debug || globalDebug ? 1000 : -1,
+            backgroundColor: sensor.debug || globalDebug ? "rgba(255, 0, 0, 0.1)" : "transparent",
+            border: sensor.debug || globalDebug ? "1px dashed red" : "none",
+            borderRadius: "1rem",
+            ...sensor.position,
+          }}
+        >
+          {sensor.debug || globalDebug ? sensor.id : null}
+        </div>
+      );
 
-    return {
-      id: sensor.id,
-      brightness: state.brightness,
-      isDark,
-      isLight: state.brightness > threshold,
-      SensorComponent,
-      ...((sensor.debug || globalDebug) && { debugInfo: { sensorRect: state.rect } }),
-    };
-  });
+      return {
+        id: sensor.id,
+        brightness: state.brightness,
+        isDark,
+        isLight: state.brightness > threshold,
+        SensorComponent,
+        ...((sensor.debug || globalDebug) && { debugInfo: { sensorRect: state.rect } }),
+      };
+    });
+  }, [sensors, sensorStates, globalThreshold, globalDebug]);
 
   const getSensorById = useCallback(
     (id: string) => {
