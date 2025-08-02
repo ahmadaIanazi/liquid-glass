@@ -181,7 +181,6 @@
   z-index: 2;
   border-radius: inherit;
   color: rgba(0, 0, 0, 0.9);
-  /* text-shadow: 0 1px 1px rgba(255, 255, 255, 0.2); */
   transform: scale(1);
   overflow: hidden;
 
@@ -190,16 +189,20 @@
   --shadow-y1-mult: 1;
   --shadow-x2-mult: -1;
   --shadow-y2-mult: -1;
-  --border-color: rgba(255, 255, 255, 0.6);
+  /* ✨ NEW: Default RGB values for the border highlight (white) */
+  --border-highlight-rgb: 255, 255, 255;
+  /* ✨ MODIFIED: The border now uses the dynamic color variable */
+  --border-color: rgba(var(--border-highlight-rgb), 1);
   --outer-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  /* ✨ Default RGB values for the main highlight color (white) */
+  --highlight-color-rgb: 255, 255, 255;
 
-  /* ✨ Unified box-shadow using CSS variables */
+  /* ✨ Unified box-shadow using CSS variables (no change here) */
   box-shadow: inset calc(var(--shadow-x1-mult) * 1px) calc(var(--shadow-y1-mult) * 1px) 0 var(--border-color),
     inset calc(var(--shadow-x2-mult) * 1px) calc(var(--shadow-y2-mult) * 1px) 0 var(--border-color), var(--outer-shadow);
 
-  /* ✨ Add box-shadow to the transition property for smooth animations */
   transition: box-shadow 400ms cubic-bezier(0.25, 1, 0.5, 1);
-  will-change: transform, box-shadow; /* box-shadow is now animated */
+  will-change: transform, box-shadow;
 }
 
 /* Glow Gradient Overlay (top-left + bottom-right) */
@@ -212,32 +215,12 @@
   height: 100%;
   border-radius: inherit;
   pointer-events: none;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, transparent 40%, transparent 60%, rgba(255, 255, 255, 0.25) 100%);
-  opacity: 0.4;
+  /* ✨ MODIFIED: Uses the dynamic color with a subtle alpha for the glow */
+  background: linear-gradient(135deg, rgba(var(--highlight-color-rgb), 0.25) 0%, transparent 40%, transparent 60%, rgba(var(--highlight-color-rgb), 0.25) 100%);
+  opacity: 0.6; /* Increased opacity slightly to make the color hint more visible */
   z-index: 0;
-  transition: opacity 400ms ease;
+  transition: opacity 400ms ease, background 500ms ease;
 }
-
-/* --- Dark Mode --- */
-.liquid-glass-content.dark,
-.dark .liquid-glass-content {
-  color: rgba(255, 255, 255, 1);
-  /* ✨ Set dark mode variable values */
-  --border-color: rgba(255, 255, 255, 0.4);
-  --outer-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-/* ✨ On hover, we just update the outer shadow variable */
-.liquid-glass-content.is-hovering {
-  --outer-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
-}
-
-.liquid-glass-content.dark.is-hovering,
-.dark .liquid-glass-content.is-hovering {
-  --outer-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
-}
-
-/* --- ✨ Interactive Hover and Ripple Effect --- */
 
 /* Base definition for the spotlight/ripple element (hidden by default) */
 .liquid-glass-content::after {
@@ -248,14 +231,33 @@
   width: 250px;
   height: 250px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, transparent 70%);
+  /* ✨ MODIFIED: Uses the dynamic color for the interactive ripple */
+  background: radial-gradient(circle, rgba(var(--highlight-color-rgb), 0.6) 0%, transparent 70%);
   transform: translate(-50%, -50%) scale(0);
   opacity: 0;
   z-index: 0;
   pointer-events: none;
-  /* Define transitions for hover, click (ripple), and release */
-  transition: transform 350ms cubic-bezier(0.25, 1, 0.5, 1), opacity 350ms ease-out;
+  transition: transform 350ms cubic-bezier(0.25, 1, 0.5, 1), opacity 350ms ease-out, background 500ms ease;
   will-change: transform, opacity;
+}
+
+/* --- Dark Mode --- */
+.liquid-glass-content.dark,
+.dark .liquid-glass-content {
+  color: rgba(255, 255, 255, 1);
+  /* ✨ MODIFIED: The dark mode border also uses the dynamic color, but with lower opacity */
+  --border-color: rgba(var(--border-highlight-rgb), 0.4);
+  --outer-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* ✨ In dark mode, the glow effect is slightly less intense to avoid a muddy look */
+.liquid-glass-content.dark::before {
+  opacity: 0.45;
+}
+
+/* ✨ Ripple effect is also adjusted for dark mode */
+.liquid-glass-content.dark::after {
+  background: radial-gradient(circle, rgba(var(--highlight-color-rgb), 0.5) 0%, transparent 70%);
 }
 
 /* On hover, the spotlight appears and follows the mouse */
@@ -264,12 +266,19 @@
   opacity: 1;
 }
 
-/* 涟漪 On click, this triggers the ripple effect */
+/* On click, this triggers the ripple effect */
 .liquid-glass-content.is-clicked::after {
-  /* Animate the scale to a very large value to cover the entire container */
   transform: translate(-50%, -50%) scale(15);
-  /* As the ripple expands, it fades away to create a wave-of-light effect */
   opacity: 0;
-  /* Use a longer, smoother transition for the ripple animation */
   transition: transform 500ms ease-out, opacity 500ms ease-out;
+}
+
+/* On hover, we just update the outer shadow variable */
+.liquid-glass-content.is-hovering {
+  --outer-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+}
+
+.liquid-glass-content.dark.is-hovering,
+.dark .liquid-glass-content.is-hovering {
+  --outer-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
 }

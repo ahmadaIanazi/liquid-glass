@@ -65,6 +65,110 @@ const LiquidGlass = React.forwardRef<HTMLDivElement, LiquidGlassProps>(({ classN
     };
   }, [isClicked]);
 
+  // ✨ Memoize the parsed RGB values from the averageColor string
+  // Helper functions for color conversion
+  function rgbToHsl(r, g, b) {
+    r /= 255;
+    g /= 255;
+    b /= 255;
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    let h = 0;
+    let s = 0;
+    const l = (max + min) / 2;
+
+    if (max !== min) {
+      const d = max - min;
+      s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      switch (max) {
+        case r:
+          h = (g - b) / d + (g < b ? 6 : 0);
+          break;
+        case g:
+          h = (b - r) / d + 2;
+          break;
+        case b:
+          h = (r - g) / d + 4;
+          break;
+      }
+      h /= 6;
+    }
+
+    return [h * 360, s * 100, l * 100];
+  }
+
+  function hslToRgb(h, s, l) {
+    h /= 360;
+    s /= 100;
+    l /= 100;
+
+    let r, g, b;
+
+    if (s === 0) {
+      r = g = b = l;
+    } else {
+      const hue2rgb = (p, q, t) => {
+        if (t < 0) t += 1;
+        if (t > 1) t -= 1;
+        if (t < 1 / 6) return p + (q - p) * 6 * t;
+        if (t < 1 / 2) return q;
+        if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+        return p;
+      };
+
+      const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+      const p = 2 * l - q;
+      r = hue2rgb(p, q, h + 1 / 3);
+      g = hue2rgb(p, q, h);
+      b = hue2rgb(p, q, h - 1 / 3);
+    }
+
+    return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+  }
+
+  function adjustHue(h, degrees) {
+    return (h + degrees) % 360;
+  }
+
+  // React hook implementation
+  const highlightRgbValues = React.useMemo(() => {
+    const match = averageColor.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+    if (match) {
+      let r = parseInt(match[1], 10);
+      let g = parseInt(match[2], 10);
+      let b = parseInt(match[3], 10);
+
+      // Convert to HSL
+      let [h, s, l] = rgbToHsl(r, g, b);
+
+      // Handle near-black colors with hue shift
+      if (l < 15) {
+        h = adjustHue(h, 30);
+        s = Math.max(s, 70);
+      }
+
+      // Handle near-white colors
+      if (l > 90) {
+        h = adjustHue(h, 180);
+        s = Math.max(s, 30);
+      }
+
+      // Define target values
+      const targetS = s < 15 ? 90 : 85; // Boost saturation for grays
+      const targetL = 85; // Optimal lightness for vibrancy
+
+      // Apply transformations
+      const [newR, newG, newB] = hslToRgb(
+        h,
+        Math.min(95, targetS), // Cap saturation at 95%
+        targetL
+      );
+
+      return `${newR}, ${newG}, ${newB}`;
+    }
+    return "240, 240, 240"; // Light blue fallback
+  }, [averageColor]);
+
   const refCallback = React.useCallback(
     (element: HTMLDivElement | null) => {
       // Assign to forwarded ref
@@ -202,6 +306,9 @@ const LiquidGlass = React.forwardRef<HTMLDivElement, LiquidGlassProps>(({ classN
             "--shadow-y1-mult": shadowMult.y1,
             "--shadow-x2-mult": shadowMult.x2,
             "--shadow-y2-mult": shadowMult.y2,
+            // ✨ INJECTED: The parsed RGB values for dynamic coloring
+            "--highlight-color-rgb": highlightRgbValues,
+            "--border-highlight-rgb": highlightRgbValues, // ✨ Add this line
           } as React.CSSProperties
         }
       >
