@@ -1,14 +1,14 @@
 import type React from "react";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css";
+import "../styles/globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "LinkBuilder - Create Your Perfect Link Page",
-  description: "Build beautiful, mobile-first link pages with drag-and-drop editing",
-  keywords: "link in bio, linktree alternative, link page builder",
+  title: "Liquid Glass - A Liquid Glass Effect Demo for React",
+  description: "A Liquid Glass Effect Demo for React",
+  keywords: "liquid glass, liquid glass effect, liquid glass library, liquid glass react, liquid glass next, liquid glass tailwind, liquid glass css",
   // viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
 };
 

@@ -101,6 +101,9 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: 1.1.6
         version: 1.1.6(@types/react-dom@18.0.0)(@types/react@18.0.0)(react-dom@18.0.0(react@18.0.0))(react@18.0.0)
+      '@specy/liquid-glass-react':
+        specifier: ^1.0.2
+        version: 1.0.2(react-dom@18.0.0(react@18.0.0))(react@18.0.0)
       autoprefixer:
         specifier: ^10.4.20
         version: 10.4.20(postcss@8.5.0)
@@ -996,6 +999,12 @@ packages:
 
   '@radix-ui/rect@1.1.0':
     resolution: {integrity: sha512-A9+lCBZoaMJlVKcRBz2YByCG+Cp2t6nAnMnNba+XiWxnj6r4JUFqfsgwocMBZU9LPtdxC6wB56ySYpc7LQIoJg==}
+
+  '@specy/liquid-glass-react@1.0.2':
+    resolution: {integrity: sha512-n4TNVMucCLBmZrc/94580eX9CMYQHFpK9ScDYvdnegnMndNKIpYzKHFZqE1N28X9jn4Hxz6L4r4c2VeXm6dJLg==}
+    peerDependencies:
+      react: '>=18.0.0'
+      react-dom: '>=18.0.0'
 
   '@swc/counter@0.1.3':
     resolution: {integrity: sha512-e2BR4lsJkkRlKZ/qCHPw9ZaSxc0MVUd7gtbtaB7aMvHeJVYe8sOB8DBZkP2DtISHGSku9sCK6T6cnY0CtXrOCQ==}
@@ -2646,6 +2655,11 @@ snapshots:
       '@types/react-dom': 18.0.0
 
   '@radix-ui/rect@1.1.0': {}
+
+  '@specy/liquid-glass-react@1.0.2(react-dom@18.0.0(react@18.0.0))(react@18.0.0)':
+    dependencies:
+      react: 18.0.0
+      react-dom: 18.0.0(react@18.0.0)
 
   '@swc/counter@0.1.3': {}
 

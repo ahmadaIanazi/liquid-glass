@@ -1,0 +1,275 @@
+/* Liquid Glass Effect CSS Classes */
+
+.liquid-glass-border {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  border-radius: inherit;
+  backdrop-filter: blur(32px) saturate(300%);
+  filter: url(#liquid-glass-border);
+  self-align: center;
+  margin: 0 auto;
+  pointer-events: none;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+
+  /* Isolate the filter context */
+  isolation: isolate;
+  will-change: filter;
+
+  /* Create border-radius aware mask using inset box-shadow */
+
+  background: linear-gradient(transparent, transparent);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: xor;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  padding: 1px; /* Same as box-shadow inset value */
+}
+.liquid-glass-border-1 {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  border-radius: inherit;
+  backdrop-filter: blur(32px) saturate(160%);
+  filter: url(#liquid-glass-border);
+  self-align: center;
+  margin: 0 auto;
+  pointer-events: none;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+
+  /* Isolate the filter context */
+  isolation: isolate;
+  will-change: filter;
+
+  /* Create border-radius aware mask using inset box-shadow */
+
+  background: linear-gradient(transparent, transparent);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: xor;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  padding: 2px; /* Same as box-shadow inset value */
+  opacity: 0.6;
+}
+
+.liquid-glass-border-2 {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  border-radius: inherit;
+  backdrop-filter: blur(32px) saturate(160%);
+  filter: url(#liquid-glass-border);
+  self-align: center;
+  margin: 0 auto;
+  pointer-events: none;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+
+  /* Isolate the filter context */
+  isolation: isolate;
+  will-change: filter;
+
+  /* Create border-radius aware mask using inset box-shadow */
+
+  background: linear-gradient(transparent, transparent);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: xor;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  padding: 3px; /* Same as box-shadow inset value */
+  opacity: 0.4;
+}
+
+.liquid-glass-border-3 {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: inherit;
+  backdrop-filter: blur(32px) saturate(160%);
+  filter: url(#liquid-glass-border);
+  self-align: center;
+  margin: 0 auto;
+  pointer-events: none;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+
+  /* Isolate the filter context */
+  isolation: isolate;
+  will-change: filter;
+
+  /* Create border-radius aware mask using inset box-shadow */
+
+  background: linear-gradient(transparent, transparent);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: xor;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  padding: 4px; /* Same as box-shadow inset value */
+  opacity: 0.2;
+}
+
+.liquid-glass-edges-T {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  backdrop-filter: blur(1px);
+  filter: url(#liquid-glass-edges-T);
+  self-align: center;
+  margin: 0 auto;
+  pointer-events: none;
+  box-sizing: border-box;
+  width: calc(100% - 1px);
+  height: calc(100% - 1px);
+
+  /* Isolate the filter context */
+  isolation: isolate;
+  will-change: filter;
+
+  clip-path: inset(0 0 50% 0);
+}
+
+.liquid-glass-edges-B {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  backdrop-filter: blur(1px);
+  filter: url(#liquid-glass-edges-B);
+  self-align: center;
+  margin: 0 auto;
+  pointer-events: none;
+  box-sizing: border-box;
+  width: calc(100% - 1px);
+  height: calc(100% - 1px);
+
+  /* Isolate the filter context */
+  isolation: isolate;
+  will-change: filter;
+
+  /* Only render the bottom half */
+  clip-path: inset(50% 0 0 0);
+}
+
+/* Third layer: Subtle blur in the center area where Content Exists */
+.liquid-glass-blur {
+  position: absolute;
+  z-index: 2;
+  border-radius: inherit;
+  pointer-events: none;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+
+  /* Linear gradient mask: strong in middle, fades top/bottom */
+  mask-image: linear-gradient(to bottom, transparent 0%, black 35%, black 65%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 35%, black 65%, transparent 100%);
+}
+
+/* The content container with the visual glass styles. */
+.liquid-glass-content {
+  position: relative;
+  z-index: 2;
+  border-radius: inherit;
+  color: rgba(0, 0, 0, 0.9);
+  /* text-shadow: 0 1px 1px rgba(255, 255, 255, 0.2); */
+  transform: scale(1);
+  overflow: hidden;
+
+  /* ✨ Default values for dynamic properties */
+  --shadow-x1-mult: 1;
+  --shadow-y1-mult: 1;
+  --shadow-x2-mult: -1;
+  --shadow-y2-mult: -1;
+  --border-color: rgba(255, 255, 255, 0.6);
+  --outer-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+  /* ✨ Unified box-shadow using CSS variables */
+  box-shadow: inset calc(var(--shadow-x1-mult) * 1px) calc(var(--shadow-y1-mult) * 1px) 0 var(--border-color),
+    inset calc(var(--shadow-x2-mult) * 1px) calc(var(--shadow-y2-mult) * 1px) 0 var(--border-color), var(--outer-shadow);
+
+  /* ✨ Add box-shadow to the transition property for smooth animations */
+  transition: box-shadow 400ms cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: transform, box-shadow; /* box-shadow is now animated */
+}
+
+/* Glow Gradient Overlay (top-left + bottom-right) */
+.liquid-glass-content::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, transparent 40%, transparent 60%, rgba(255, 255, 255, 0.25) 100%);
+  opacity: 0.4;
+  z-index: 0;
+  transition: opacity 400ms ease;
+}
+
+/* --- Dark Mode --- */
+.liquid-glass-content.dark,
+.dark .liquid-glass-content {
+  color: rgba(255, 255, 255, 1);
+  /* ✨ Set dark mode variable values */
+  --border-color: rgba(255, 255, 255, 0.4);
+  --outer-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* ✨ On hover, we just update the outer shadow variable */
+.liquid-glass-content.is-hovering {
+  --outer-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+}
+
+.liquid-glass-content.dark.is-hovering,
+.dark .liquid-glass-content.is-hovering {
+  --outer-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+}
+
+/* --- ✨ Interactive Hover and Ripple Effect --- */
+
+/* Base definition for the spotlight/ripple element (hidden by default) */
+.liquid-glass-content::after {
+  content: "";
+  position: absolute;
+  top: var(--mouse-y);
+  left: var(--mouse-x);
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, transparent 70%);
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  z-index: 0;
+  pointer-events: none;
+  /* Define transitions for hover, click (ripple), and release */
+  transition: transform 350ms cubic-bezier(0.25, 1, 0.5, 1), opacity 350ms ease-out;
+  will-change: transform, opacity;
+}
+
+/* On hover, the spotlight appears and follows the mouse */
+.liquid-glass-content.is-hovering::after {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+/* 涟漪 On click, this triggers the ripple effect */
+.liquid-glass-content.is-clicked::after {
+  /* Animate the scale to a very large value to cover the entire container */
+  transform: translate(-50%, -50%) scale(15);
+  /* As the ripple expands, it fades away to create a wave-of-light effect */
+  opacity: 0;
+  /* Use a longer, smoother transition for the ripple animation */
+  transition: transform 500ms ease-out, opacity 500ms ease-out;
+}

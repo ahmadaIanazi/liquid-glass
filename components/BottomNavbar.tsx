@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Home, Gamepad2, Users, Library, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useLiquidGlassSupport } from "@/hooks/useLiquidGlassSupport";
+import { useLiquidGlassSupport } from "@/LiquidGlass/hooks/use-liquid-glass-support";
 
 export function BottomNavbar({ isDark }: { isDark: boolean }) {
   const { fallbackGlass } = useLiquidGlassSupport();

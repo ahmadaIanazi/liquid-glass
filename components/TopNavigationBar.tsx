@@ -2,8 +2,8 @@
 
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Ellipsis } from "lucide-react";
-import "@/styles/gradient-blur.css";
-import { useLiquidGlassSupport } from "@/hooks/useLiquidGlassSupport";
+import "@/LiquidGlass/styles/gradient-blur.css";
+import { useLiquidGlassSupport } from "@/LiquidGlass/hooks/use-liquid-glass-support";
 
 export function TopNavigationBar({ isDark }: { isDark: boolean }) {
   const { fallbackGlass } = useLiquidGlassSupport();
